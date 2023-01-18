@@ -325,6 +325,22 @@ docker:
 
     RUN rm -rf /etc/machine-id && touch /etc/machine-id && chmod 444 /etc/machine-id
 
+    # Copy flavor-specific overlay files
+    IF [[ "$FLAVOR" =~ "alpine" ]]
+        COPY overlay/files-alpine/ /
+    END
+    
+    IF [ "$FLAVOR" = "opensuse" ]
+        COPY overlay/files-opensuse/ /
+    ELSE IF [ "$FLAVOR" = "alpine-arm-rpi" ]
+        COPY overlay/files-opensuse-arm-rpi/ /
+    ELSE IF [ "$FLAVOR" = "opensuse-leap-arm-rpi" ] || [ "$FLAVOR" = "opensuse-tumbleweed-arm-rpi" ]
+        COPY overlay/files-opensuse-arm-rpi/ /
+    ELSE IF [ "$FLAVOR" = "fedora" ] || [ "$FLAVOR" = "rockylinux" ]
+        COPY overlay/files-fedora/ /
+    ELSE IF [ "$FLAVOR" = "debian" ] || [ "$FLAVOR" = "ubuntu" ] || [ "$FLAVOR" = "ubuntu-20-lts" ] || [ "$FLAVOR" = "ubuntu-22-lts" ]
+        COPY overlay/files-ubuntu/ /
+    END
 
     # Enable services
     IF [ -f /sbin/openrc ]
